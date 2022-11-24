@@ -1,0 +1,26 @@
+grammar Qupla;
+INT:[0-9]+;
+HEX:[0][xX][0-9a-fA-F]+;
+FLOAT:[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+);
+COMMENT:'%%%' .*? '%%%'|'%%' .*? '%%' ;
+NEWLINE : [\r\t\n]+ -> skip;
+STRING :'"'.*?'"';
+AND:'&'|'and';
+OR:'|'|'or';
+PLUS:[+];
+MINES :[-];
+DIV : [/];
+MUL : [*];
+NOT : [not];
+XOR : [xor];
+POWER : [^];
+MODE : [%];
+FACT : [!];
+NOTEQ : [<>];
+ASSIGN : [=];
+LESS : [<];
+LESSEQ : [<=];
+GREATER : [>];
+GREATEREQ : [>=];
+
+IDENTIFIER:[a-zA-Z][0-9a-zA-Z]*;
