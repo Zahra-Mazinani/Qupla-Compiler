@@ -60,9 +60,7 @@ RETURN:[Rr][Ee][Tt][uU][rR][Nn];
 TRUE:[tT][rR][uU][eE];
 FALSE:[fF][aA][Ll][sS][eE];
 
-TAB: ([' ']+| '\\''t');
-SPACE:(' ');
-SEPERATOR:[;];
+SEPERATOR:[';'|[' ']+| '\\''t'];
 
-IDENTIFIER:[_]*[a-zA-Z][0-9a-zA-Z]*;
+IDENTIFIER:[a-zA-Z][0-9a-zA-Z]*;
 ERROR : .;
