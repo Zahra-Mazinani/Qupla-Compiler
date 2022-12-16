@@ -61,6 +61,7 @@ T_FLOAT : [Ff][Ll][oO][Aa][Tt];
 T_STRING : [sS][Tt][Rr][Ii][Nn][Gg];
 T_BOOL : [Bb][Oo][Oo][Ll];
 T_HEX : [Hh][Ee][xX];
+T_ID : [Ii][dD];
 
 VOID : [Vv][Oo][Ii][Dd];
 INPUT:[Ii][Nn][Pp][Uu][Tt];
@@ -68,11 +69,12 @@ OUTPUT:[Oo][Uu][Tt][Pp][Uu][Tt];
 RETURN : [Rr][Ee][Tt][uU][rR][Nn];
 MODULE : [mM][oO][dD][Uu][Ll][Ee];
 
+
 TRUE : [tT][rR][uU][eE];
 FALSE : [fF][aA][Ll][sS][eE];
 
-SEPERATOR : (' ')|(';')|[\r\n\t]*;
-
+SEPERATOR : (' ')|[\r\n\t]*;
+SEMICOLON :(';');
 ID : [a-zA-Z]SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
         SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
         SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
