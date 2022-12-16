@@ -70,8 +70,8 @@ RETURN : [Rr][Ee][Tt][uU][rR][Nn];
 TRUE : [tT][rR][uU][eE];
 FALSE : [fF][aA][Ll][sS][eE];
 
-SEPERATOR : ('\\''n')|(' ')|('\\''t')|(';');
-
+SEPERATOR : ('\\''n')|(' ')|('\\''t');
+SEMICOLON : (';');
 ID : [a-zA-Z]SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
         SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
         SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
