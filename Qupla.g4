@@ -1,12 +1,96 @@
 grammar Qupla;
+parse:
+block EOF
+;
+block:
+module*
+;
+module:
+MODULE ID INPUT DEFINE (vari_defining)+ OUTPUT DEFINE type SEMICOLON codeblock
+|vari_defining
+| MODULE ID codeblock1
+;
+codeblock:
+BEGIN assignment END
+|BEGIN if_stat END
+|BEGIN write_state END
+|BEGIN read_stat END
+|BEGIN while_stat END
+|BEGIN return_stat END
+|BEGIN vari_defining END
+;
+codeblock1:
+BEGIN assignment END
+|BEGIN if_stat END
+|BEGIN write_state END
+|BEGIN read_stat END
+|BEGIN while_stat END
+|BEGIN vari_defining END
+;
+
+takstat:
+assignment
+|write_state
+|read_stat
+|vari_defining
+;
+assignment:
+ID ASSIGN exp SEMICOLON
+;
+
+if_stat:
+IF condition_block THEN code ELSE code
+|IF condition_block THEN code
+;
+
+code:
+codeblock
+|takstat
+;
+while_stat:
+WHILE exp code
+;
+
+vari_defining:
+ID DEFINE type SEMICOLON  {print("vari_defining")}
+;
+
+type:
+T_BOOL
+|REAL
+|T_STRING
+;
+
+write_state:
+WRITE exp SEMICOLON
+;
+read_stat:
+READ ID SEMICOLON
+;        
+
+exp:
+INT
+|FLOAT
+|HEX
+|ID 
+|exp PLUS exp    {print(" exp plus");}  
+|exp MINES exp    {print(" exp mines");} 
+|exp MUL exp    {print(" exp mul");}
+|exp DIV exp    {print(" exp div");}  
+|exp POWER exp    {print(" exp power");}
+|exp FACT   {print(" exp fact");}  
+|exp MODE exp    {print(" exp mod");} 
+|exp GREATER| GREATEREQ | LESS | LESSEQ |NOTEQ | ASSIGN  exp 
+|exp XOR | OR| NOT | AND exp 
+;
+
 
 INT : [0-9]+ ;
 HEX : [0][xX][0-9a-fA-F]+;
 FLOAT:[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+);
+REAL: [rR][Ee][Aa][Ll] ;
 
-
-COMMENT:'%%%'.*? '%%%'|'%%'~[\r\n]* ;
-NEWLINE : [\r\t\n]+ -> skip;
+COMMENT:'%%%'.*? '%%%'|'%%'~[\r\n]*->skip ;
 
 STRING :'"'~[\r\n]*'"';
 
@@ -36,12 +120,12 @@ LESS : [<];
 LESSEQ : ('<=');
 GREATER : [>];
 GREATEREQ : ('>=');
+DEFINE : (':');
+COMMA : (',');
 
 IF : [Ii][Ff];
 THEN : [Tt][Hh][Ee][Nn];
 ELSE: [eE][lL][Ss][eE];
-IF_QU : ('?');
-IF_TD : (':');
 
 BEGIN : [Bb][Ee][Gg][Ii][Nn];
 END : [Ee][Nn][Dd];
@@ -65,13 +149,17 @@ T_BOOL : [Bb][Oo][Oo][Ll];
 T_HEX : [Hh][Ee][xX];
 
 VOID : [Vv][Oo][Ii][Dd];
+INPUT:[Ii][Nn][Pp][Uu][Tt];
+OUTPUT:[Oo][Uu][Tt][Pp][Uu][Tt];
 RETURN : [Rr][Ee][Tt][uU][rR][Nn];
+MODULE : [mM][oO][dD][Uu][Ll][Ee];
+
 
 TRUE : [tT][rR][uU][eE];
 FALSE : [fF][aA][Ll][sS][eE];
 
-SEPERATOR : ('\\''n')|(' ')|('\\''t');
-SEMICOLON : (';');
+SEPERATOR : (' ')|[\r\n\t]*->skip;
+SEMICOLON :(';');
 ID : [a-zA-Z]SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
         SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
         SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
