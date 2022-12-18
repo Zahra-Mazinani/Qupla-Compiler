@@ -12,8 +12,9 @@ module:
 MODULE ID INPUT DEFINE  (vari_defining)+ OUTPUT DEFINE type SEPERATOR codeblock
 |MODULE ID codeblock1
 |vari_defining
-|ERROR
+|ERROR   {print("structure ERROR")}
 ;
+
 
 assignment:
 ID ASSIGN exp SEPERATOR
@@ -33,22 +34,25 @@ T_BOOL
 ;
 
 codeblock:
-//codeblock_with_return
-BEGIN ( ((vari_defining) | (assignment)|(print) | (reading) |(ifthen) |(loop)| (return_value)|COMMENT)* ) END
+BEGIN ( ((vari_defining) | (assignment)|(print) | (reading) |(ifthen) |(loop)| (return_value)|COMMENT|(sub_block ))* ) END
 |ERROR  {print(" codeblock ERROR")} 
 ;
 
 codeblock1:
-//codeblock1_second
-BEGIN ( ((vari_defining) | code|COMMENT)* )END
+BEGIN ( ((vari_defining) | (assignment)|(print) | (reading) |(ifthen) |(loop)|COMMENT|(sub_block1 )) *)END
+|ERROR  {print(" codeblock1 ERROR")} 
 ;
-//codeblock_second:
-//codeblock
-//;
 
-//codeblock1_second:
-//codeblock1
-//;
+
+ sub_block:
+ BEGIN ( ((vari_defining) | (assignment)|(print) | (reading) |(ifthen) |(loop)| (return_value)|COMMENT)* ) END
+|ERROR  {print(" codeblock ERROR")} 
+;
+
+sub_block1:
+ BEGIN ( ((vari_defining) | (assignment)|(print) | (reading) |(ifthen) |(loop)|COMMENT)* ) END
+|ERROR  {print(" s_block1 ERROR")} 
+;
 
 
 print:
@@ -77,6 +81,7 @@ print
 |ifthen
 |loop
 |assignment
+|codeblock
 ;
 
 loop:
