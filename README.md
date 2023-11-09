@@ -1,4 +1,4 @@
-# Qupla-compiler
+# Qupla-Compiler
 This project is about creating a language by using Antlr tool.
 This project includes the following sections:
 1-lexer 
