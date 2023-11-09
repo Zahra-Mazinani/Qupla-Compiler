@@ -1,96 +1,134 @@
-grammar Qupla;
-parse:
+grammar Qupla_deb;
+
+prog:
 block EOF
 ;
+
 block:
-module*
+(module|vari_defining|COMMENT)*
 ;
+
 module:
-MODULE ID INPUT DEFINE (vari_defining)+ OUTPUT DEFINE type SEMICOLON codeblock
+MODULE ID INPUT DEFINE  (vari_defining)+ OUTPUT DEFINE type SEPERATOR codeblock
+|MODULE ID codeblock1
 |vari_defining
-| MODULE ID codeblock1
-;
-codeblock:
-BEGIN assignment END
-|BEGIN if_stat END
-|BEGIN write_state END
-|BEGIN read_stat END
-|BEGIN while_stat END
-|BEGIN return_stat END
-|BEGIN vari_defining END
-;
-codeblock1:
-BEGIN assignment END
-|BEGIN if_stat END
-|BEGIN write_state END
-|BEGIN read_stat END
-|BEGIN while_stat END
-|BEGIN vari_defining END
+|ERROR   {print("structure ERROR")}
 ;
 
-takstat:
-assignment
-|write_state
-|read_stat
-|vari_defining
-;
+
 assignment:
-ID ASSIGN exp SEMICOLON
-;
-
-if_stat:
-IF condition_block THEN code ELSE code
-|IF condition_block THEN code
-;
-
-code:
-codeblock
-|takstat
-;
-while_stat:
-WHILE exp code
+ID ASSIGN exp SEPERATOR
+|ERROR  {print(" assignment ERROR")} 
 ;
 
 vari_defining:
-ID DEFINE type SEMICOLON  {print("vari_defining")}
+ID DEFINE type SEPERATOR
+|ERROR  {print(" DEFINE ERROR")} 
 ;
 
 type:
 T_BOOL
-|REAL
 |T_STRING
+|T_REAL
+|ERROR  {print(" type ERROR")} 
 ;
 
-write_state:
-WRITE exp SEMICOLON
+codeblock:
+BEGIN ( ((vari_defining) | (assignment)|(print) | (reading) |(ifthen) |(loop)| (return_value)|COMMENT|(sub_block ))* ) END
+|ERROR  {print(" codeblock ERROR")} 
 ;
-read_stat:
-READ ID SEMICOLON
-;        
+
+codeblock1:
+BEGIN ( ((vari_defining) | (assignment)|(print) | (reading) |(ifthen) |(loop)|COMMENT|(sub_block1 )) *)END
+|ERROR  {print(" codeblock1 ERROR")} 
+;
+
+
+ sub_block:
+ BEGIN ( ((vari_defining) | (assignment)|(print) | (reading) |(ifthen) |(loop)| (return_value)|COMMENT)* ) END
+|ERROR  {print(" codeblock ERROR")} 
+;
+
+sub_block1:
+ BEGIN ( ((vari_defining) | (assignment)|(print) | (reading) |(ifthen) |(loop)|COMMENT)* ) END
+|ERROR  {print(" s_block1 ERROR")} 
+;
+
+
+print:
+WRITE exp SEPERATOR
+;
+
+reading:
+READ ID SEPERATOR
+|ERROR  {print(" unreadble ERROR")} 
+;
+
+return_value:
+RETURN exp SEPERATOR
+
+;
+
+ifthen:
+IF exp THEN code ELSE code 
+|IF exp THEN code
+;
+
+code:
+print
+|reading
+|return_value
+|ifthen
+|loop
+|assignment
+|codeblock
+;
+
+loop:
+WHILE exp code
+;
 
 exp:
-INT
-|FLOAT
-|HEX
+REAL
+|INT
+|BOOL
+|STRING
 |ID 
-|exp PLUS exp    {print(" exp plus");}  
-|exp MINES exp    {print(" exp mines");} 
-|exp MUL exp    {print(" exp mul");}
-|exp DIV exp    {print(" exp div");}  
-|exp POWER exp    {print(" exp power");}
-|exp FACT   {print(" exp fact");}  
-|exp MODE exp    {print(" exp mod");} 
-|exp GREATER| GREATEREQ | LESS | LESSEQ |NOTEQ | ASSIGN  exp 
-|exp XOR | OR| NOT | AND exp 
+|exp POWER exp    {print(" exp power")}
+|exp FACT         {print(" exp fact")} 
+|exp MUL exp      {print(" exp mul")}
+|exp DIV exp      {print(" exp div")}  
+|exp MODE exp     {print(" exp mod")}
+|exp PLUS exp     {print(" exp plus")}  
+|exp MINES exp    {print(" exp mines")} 
+|exp NOTEQ exp         {print(" exp <>")}
+|exp GREATEREQ exp     {print(" exp <=")}
+|exp LESSEQ exp        {print(" exp >=")}
+|exp ASSIGN exp        {print(" exp =")}
+|exp GREATER exp       {print(" exp grt")}
+|exp LESS exp          {print(" exp >")}
+|exp XOR exp      {print(" exp xor")}
+|exp OR exp       {print(" exp or")}
+|exp NOT exp      {print(" exp not")}
+|exp AND exp      {print(" exp and")} 
+|P_O exp P_C    
+|callmodule   
+;
+callmodule:
+ID P_O exp         (COMMA exp)*        P_C 
+|ID P_O exp P_C 
 ;
 
 
-INT : [0-9]+ ;
-HEX : [0][xX][0-9a-fA-F]+;
-FLOAT:[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+);
-REAL: [rR][Ee][Aa][Ll] ;
 
-COMMENT:'%%%'.*? '%%%'|'%%'~[\r\n]*->skip ;
+// ----------------
+// lexer rules
+// ----------------
+INT:[0-9]+ ;
+FLOAT:[-]?([0-9]+([.][0-9]*)?|[.][0-9]+) ;
+REAL : [0-9]+ | [0][xX][0-9a-fA-F]+ | [-]?([0-9]+([.][0-9]*)?|[.][0-9]+);
+T_REAL: [rR][Ee][Aa][Ll] ;
+COMMENT:'%%%'.*? '%%%'|'%%'~[\r\n]* ;
 
 STRING :'"'~[\r\n]*'"';
 
@@ -154,12 +192,11 @@ OUTPUT:[Oo][Uu][Tt][Pp][Uu][Tt];
 RETURN : [Rr][Ee][Tt][uU][rR][Nn];
 MODULE : [mM][oO][dD][Uu][Ll][Ee];
 
+BOOL :  [tT][rR][uU][eE] |[fF][aA][Ll][sS][eE] ;
 
-TRUE : [tT][rR][uU][eE];
-FALSE : [fF][aA][Ll][sS][eE];
 
-SEPERATOR : (' ')|[\r\n\t]*->skip;
-SEMICOLON :(';');
+WT : [ \r\n\t]+ -> skip;
+SEPERATOR :(';');
 ID : [a-zA-Z]SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
         SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
         SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?SUBID?
